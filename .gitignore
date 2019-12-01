@@ -1,0 +1,10 @@
+
+/target/
+/dist
+/node_modules
+.cpcache/
+.shadow-cljs/
+data/
+
+.nrepl-port
+result*
