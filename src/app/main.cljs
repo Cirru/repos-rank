@@ -24,32 +24,22 @@
                 (js/JSON.parse (fs/readFileSync "./data/languages.json" "utf8"))))]
     (comment println langs)
     (go-loop
-     [acc {} xs (drop 380 langs)]
+     [acc {} xs (drop 0 langs)]
      (if (empty? xs)
        (do (println (pr-str acc)) (fs/writeFileSync "result.edn" (pr-str acc)))
        (let [lang (first xs), repos-count (<! (chan-count-language! lang))]
          (fs/writeFileSync "result.edn" (pr-str acc))
          (println "Got" (pr-str lang) repos-count (count acc) "remaining:" (count xs))
-         (<! (timeout 1111))
+         (<! (timeout 2111))
          (recur (assoc acc lang repos-count) (rest xs)))))))
 
 (defn load-data! []
-  (let [files ["result-1-88.edn"
-               "result-130-150.edn"
-               "result-150-200.edn"
-               "result-200-225.edn"
-               "result-225-275.edn"
-               "result-275-300.edn"
-               "result-300-325.edn"
-               "result-325-350.edn"
-               "result-350-380.edn"
-               "result-88-130.edn"
-               "result.edn"]
+  (let [files ["result.edn"]
         data (->> files
                   (map (fn [file] (read-string (fs/readFileSync file "utf8"))))
                   (apply merge)
                   (sort-by (fn [pair] (- 0 (last pair))))
-                  (map-indexed (fn [idx [lang size]] (str idx "-----" lang "-----" size)))
+                  (map-indexed (fn [idx [lang size]] (str idx "\t" size "\t" lang)))
                   (string/join "\n"))]
     (println "size" data)))
 
