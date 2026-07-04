@@ -30,28 +30,29 @@
         |count! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
           :code $ quote
             defn count! () $ let
-                langs $ to-calcit-data
-                  js/JSON.parse $ fs/readFileSync |./data/languages.json |utf8
-              let
-                  run-loop $ fn (acc xs)
-                    hint-fn $ {} (:async true)
-                    if (empty? xs)
-                      do
-                        println $ format-cirru-edn acc
-                        fs/writeFileSync |result.edn $ format-cirru-edn acc
-                      let
-                          lang $ first xs
-                          repos-count $ js-await (chan-count-language! lang)
-                        fs/writeFileSync |result.edn $ format-cirru-edn acc
-                        println |Got (format-cirru-edn lang) repos-count (count acc) |remaining: $ count xs
-                        js-await $ wait-ms 2111
-                        js-await $ run-loop (assoc acc lang repos-count) (rest xs)
-                run-loop ({}) langs
+                all-langs $ take
+                  to-calcit-data $ js/JSON.parse (fs/readFileSync |./data/languages.json |utf8)
+                  , 5
+                chunk-size 2
+                task $ fn (dummy)
+                  hint-fn $ {} (:async true)
+                  let
+                      chunks $ split-chunks all-langs chunk-size
+                      js-promises $ js-array
+                    each chunks $ fn (chunk)
+                      .!push js-promises $ process-chunk! chunk
+                    let
+                        results $ js-await (js/Promise.all js-promises)
+                        merged $ reduce (to-calcit-data results) ({}) merge
+                      println |Saving...
+                      fs/writeFileSync |data/result.cirru $ format-cirru-edn merged
+                      println |Done!
+              task nil
           :examples $ []
         |load-data! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
           :code $ quote
             defn load-data! () $ let
-                raw-data $ parse-cirru-edn (fs/readFileSync |result.edn |utf8)
+                raw-data $ parse-cirru-edn (fs/readFileSync |data/result.cirru |utf8)
                 entries $ to-calcit-data (js/Object.entries raw-data)
                 sorted $ -> entries (.to-list)
                   .sort-by $ fn (entry)
@@ -66,9 +67,32 @@
           :code $ quote
             defn main! () (println |Started.) (count!)
           :examples $ []
+        |process-chunk! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :code $ quote
+            defn process-chunk! (xs)
+              let
+                  run-loop $ fn (acc items)
+                    hint-fn $ {} (:async true)
+                    if (empty? items) acc $ let
+                        lang $ first items
+                        repos-count $ js-await (chan-count-language! lang)
+                      println |Got (format-cirru-edn lang) repos-count
+                      js-await $ wait-ms 4000
+                      js-await $ run-loop (assoc acc lang repos-count) (rest items)
+                run-loop ({}) xs
+          :examples $ []
         |reload! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
           :code $ quote
             defn reload! () (println |Reloaded.) (count!)
+          :examples $ []
+        |split-chunks $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :code $ quote
+            defn split-chunks (xs size)
+              if (empty? xs) ([])
+                let
+                    chunk $ take xs size
+                    remains $ drop xs size
+                  concat ([] chunk) (split-chunks remains size)
           :examples $ []
         |wait-ms $ %{} :CodeEntry (:doc |) (:schema :dynamic)
           :code $ quote
