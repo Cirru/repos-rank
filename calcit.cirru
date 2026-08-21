@@ -1,24 +1,28 @@
 
 {} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `cr query` to inspect and `cr edit`/`cr tree` to modify. Run `cr docs agents --full` first. Manual edits must follow format and schema conventions, then run `cr edit format`.") (:package |app)
-  :configs $ {} (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:version |0.0.1)
-    :modules $ [] |calcit-json/ |calcit-fetch/ |calcit.std/
   :entries $ {}
+    :default $ {} (:description |) (:init-fn 'app.main/main!) (:mode :native) (:reload-fn 'app.main/reload!)
+      :feature-policy $ {}
+      :modules $ [] |calcit-json/ |calcit-fetch/ |calcit.std/
+      :type-slots $ {}
   :files $ {}
-    |app.config $ %{} :FileEntry
+    |app.config $ %{} 'FileEntry
       :defs $ {}
-        |dev? $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+        |dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote
-            def dev? $ = |dev (get-env |mode |release)
+            def dev? $ = |dev
+              option:unwrap-or (get-env |mode) |release
           :examples $ []
-      :ns $ %{} :NsEntry (:doc |)
+          :schema $ :: 'Dynamic
+      :ns $ %{} 'NsEntry (:doc |)
         :code $ quote (ns app.config)
-    |app.main $ %{} :FileEntry
+    |app.main $ %{} 'FileEntry
       :defs $ {}
-        |chan-count-language! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+        |chan-count-language! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn chan-count-language! (lang cb)
               let
-                  github-token $ or (get-env |GITHUB_API_TOKEN) |
+                  github-token $ option:unwrap-or (get-env |GITHUB_API_TOKEN) |
                   url $ str |https://api.github.com/search/repositories?q=language: (.replace lang "| " |+) | |&per_page=1
                 fetch url
                   {} $ :headers
@@ -34,7 +38,8 @@
                       (:err msg)
                         do (println "|Failed request:" msg) (cb 0)
           :examples $ []
-        |count! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :schema $ :: 'Dynamic
+        |count! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn count! () $ let
                 all-langs $ take
@@ -48,7 +53,8 @@
                     write-file |data/result.cirru $ format-cirru-edn merged
                     println |Done!
           :examples $ []
-        |load-data! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :schema $ :: 'Dynamic
+        |load-data! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn load-data! () $ let
                 raw-data $ parse-cirru-edn (read-file |data/result.cirru)
@@ -62,11 +68,13 @@
                   , "|\n"
               println |size data
           :examples $ []
-        |main! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :schema $ :: 'Dynamic
+        |main! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn main! () (println |Started.) (count!)
           :examples $ []
-        |process-chunk! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :schema $ :: 'Dynamic
+        |process-chunk! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn process-chunk! (acc items cb)
               if (empty? items) (cb acc)
@@ -77,11 +85,13 @@
                     wait-ms 4500 $ fn ()
                       process-chunk! (assoc acc lang repos-count) (rest items) cb
           :examples $ []
-        |reload! $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :schema $ :: 'Dynamic
+        |reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn reload! () (println |Reloaded.) (count!)
           :examples $ []
-        |split-chunks $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :schema $ :: 'Dynamic
+        |split-chunks $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn split-chunks (xs size)
               if (empty? xs) ([])
@@ -93,13 +103,15 @@
                       remains $ drop xs size
                     concat ([] chunk) (split-chunks remains size)
           :examples $ []
-        |wait-ms $ %{} :CodeEntry (:doc |) (:schema :dynamic)
+          :schema $ :: 'Dynamic
+        |wait-ms $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn wait-ms (ms cb)
               async-sleep $ / ms 1000
               cb
           :examples $ []
-      :ns $ %{} :NsEntry (:doc |)
+          :schema $ :: 'Dynamic
+      :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns app.main $ :require
             json.core :refer $ parse

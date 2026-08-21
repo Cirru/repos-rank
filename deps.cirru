@@ -1,5 +1,5 @@
 
-{} (:calcit-version |0.12.48)
+{} (:calcit-version |0.13.27)
   :dependencies $ {} (|calcit-lang/calcit-fetch |0.0.10)
     |calcit-lang/calcit-json |main
-    |calcit-lang/calcit.std |0.2.11
+    |calcit-lang/calcit.std |0.2.18
