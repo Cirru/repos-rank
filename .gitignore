@@ -20,3 +20,5 @@ js-out
 
 
 .yarn/*.gz
+
+.DS_Store
