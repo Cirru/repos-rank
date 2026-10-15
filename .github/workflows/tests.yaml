@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: corepack enable
+      - uses: calcit-lang/setup-calcit@v1.5.0
+        with:
+          tools: calcit,caps
+          deps-file: deps.cirru
+          caps-version: "0.1.1"
+      - name: Install and verify
+        run: |
+          caps --strict --ci
+          yarn install --immutable
+          caps verify --toolchain
+          calcit --check-only --all-defs
+          calcit fix --workflow strict --verify
+      - name: Build and test without GitHub API access
+        run: |
+          yarn build
+          yarn test
