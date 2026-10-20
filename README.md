@@ -6,13 +6,17 @@ Count repos by language on GitHub
 
 本项目是 Node 抓取脚本，不是前端应用，不配置 COS/CDN。
 
-迁移后需要 Node 24、Calcit 0.30.0（与 `@calcit/procs` 精确配对）、Caps 和 Yarn 4.18.0。
+迁移后需要 Node 24、Calcit 0.30.1-alpha.5（与 `@calcit/procs` 精确配对）、Caps 和 Yarn 4.18.0。
 JSON 解析使用 core `.parse-json`，网络和定时器使用正式 `js-ffi` 0.2.3，
 不再依赖已归档的 `calcit-json`、旧 `calcit-fetch` 或未使用的 `calcit.std` / Axios。
 
+本轮仅对齐 0.30.1 候选工具链和 lock，不改变抓取源码、API 参数、延迟或结果格式。
+截至 2026-10-20，正式 0.30.1 的 release tag 已存在，但 CLI assets 为空、npm runtime
+尚不可用，因此候选版本不称为正式版。不增加验证脚本、类型预算或 COS 工作流。
+
 ```bash
 corepack enable
-caps
+caps --strict --ci
 yarn install --immutable
 yarn build
 yarn test
