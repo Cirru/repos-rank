@@ -27,12 +27,14 @@ jobs:
           caps-version: "0.1.1"
       - name: Install and verify
         run: |
+          set -euo pipefail
           caps --strict --ci
           yarn install --immutable
           caps verify --toolchain
           calcit --check-only --all-defs
-          calcit fix --workflow strict --verify
+          calcit fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
       - name: Build and test without GitHub API access
         run: |
+          set -euo pipefail
           yarn build
           yarn test
