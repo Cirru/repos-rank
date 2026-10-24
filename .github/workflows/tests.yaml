@@ -31,6 +31,9 @@ jobs:
           caps --strict --ci
           yarn install --immutable
           caps verify --toolchain
+          git diff --quiet -- deps.cirru package.json yarn.lock .yarnrc.yml
+          calcit edit format
+          git diff --quiet -- calcit.cirru
           calcit --check-only --all-defs
           calcit fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
       - name: Build and test without GitHub API access
