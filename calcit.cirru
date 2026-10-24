@@ -182,7 +182,7 @@
           :code $ quote $ defn split-chunks (xs size)
             if (empty? xs) ([])
               if
-                <= (count xs) size
+                <= (.len xs) size
                 [] xs
                 let
                     chunk $ take xs size
