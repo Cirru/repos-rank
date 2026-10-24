@@ -1,0 +1,57 @@
+name: Prepare reviewed public source
+on:
+  push:
+    branches: [prepare/repos-rank-public031]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: corepack enable
+      - uses: calcit-lang/setup-calcit@v1.5.0
+        with:
+          tools: calcit,caps
+          caps-version: "0.1.1"
+          deps-file: deps.cirru
+      - name: Resolve exact formal graph
+        run: |
+          set -euo pipefail
+          test "$(calcit -v)" = 0.30.1
+          caps --strict --ci
+          yarn install --immutable
+          caps verify --toolchain
+          git diff --quiet -- deps.cirru package.json yarn.lock .yarnrc.yml
+      - name: Original complete gates before edits
+        run: |
+          set -euo pipefail
+          mkdir -p acceptance
+          calcit --check-only --all-defs
+          calcit fix --workflow strict --verify --format json | tee acceptance/strict-before.json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
+          yarn build
+          yarn test
+      - name: Official guarded source transaction
+        run: node apply-reviewed.mjs
+      - name: Complete original gates after edits
+        run: |
+          set -euo pipefail
+          calcit edit format
+          test "$(git hash-object calcit.cirru)" = "$(cat acceptance/snapshot-after-blob.txt)"
+          calcit --check-only --all-defs
+          calcit fix --workflow strict --verify --format json | tee acceptance/strict.json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
+          yarn build
+          yarn test
+          cp calcit.cirru acceptance/snapshot.cirru
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: repos-rank-source-evidence
+          path: acceptance
+          if-no-files-found: error
+          retention-days: 30
