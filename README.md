@@ -6,12 +6,11 @@ Count repos by language on GitHub
 
 本项目是 Node 抓取脚本，不是前端应用，不配置 COS/CDN。
 
-使用者影响：需要 Node 24、正式 Calcit **0.30.1**（与 `@calcit/procs` 精确配对）、Caps 和 Yarn 4.18.0。
-JSON 解析使用 core `.parse-json`，网络和定时器使用正式 `js-ffi` 0.2.6，
+使用者影响：需要 Node 24、正式 Calcit **0.32.0**（与 `@calcit/procs` 精确配对）、Caps 和 Yarn 4.18.0。
+JSON 解析使用 core `.parse-json`，网络和定时器使用正式 `js-ffi` 0.2.8，
 不再依赖已归档的 `calcit-json`、旧 `calcit-fetch` 或未使用的 `calcit.std` / Axios。
 
-本轮将分块函数中已声明为 List 的长度读取从 `count` 迁为 `.len`，
-配对已发布 js-ffi 0.2.6；正式 CLI/procs 0.30.1 与 lock 保持。
+本轮将旧 EDN 类型标注迁为 0.32.0 的 quoted 类型表达式，并配对正式 js-ffi 0.2.8。
 泛型 List 合同、分块条件、API 参数、延迟和结果格式不变，原离线抓取测试不改动。
 CI 保留正常 Caps strict/toolchain、全定义检查与原抓取测试，完整 strict 要求 passed 且无诊断。
 不增加验证脚本、类型预算、生产运行或 COS 工作流；正式版本声明不替代实际构建/测试证据。

@@ -16,19 +16,18 @@
               get-env |mode
               , .unwrap-or |release
           :examples $ []
-          :schema $ :: 'Bool
+          :schema $ quote Bool
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.config
     'app.main $ %{} 'FileEntry
       :defs $ {}
         'chan-count-language! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn chan-count-language! (lang cb)
-            hint-fn $ {} (:async true) (:return 'Unit)
-              :args $ [] 'String $ :: 'Fn
-                {} (:return 'Unit)
-                  :args $ [] 'Number
-                  :features $ #{} :js-ffi
-              :features $ #{} :js-ffi
+            hint-fn $ Fn String
+              Fn Number (-> Unit) (:features :js-ffi)
+              -> Unit
+              :features :js-ffi
+              :async
             let
                 github-token $
                   get-env |GITHUB_API_TOKEN
@@ -63,12 +62,10 @@
                     println "|Failed request:" $ :message error
                     cb 0
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'String $ :: 'Fn
-              {} (:return 'Unit)
-                :args $ [] 'Number
-                :features $ #{} :js-ffi
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn String
+            Fn Number (-> Unit) (:features :js-ffi)
+            -> Unit
+            :features :js-ffi
         'count! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn count! ()
             let
@@ -86,25 +83,19 @@
               process-chunk! ({})
                 (first language-chunks) .unwrap
                 fn (merged)
-                  hint-fn $ {} (:return 'Unit)
-                    :args $ [] $ :: 'Map 'String 'Number
-                    :features $ #{} :js-ffi
+                  hint-fn $ Fn (Map String Number) (-> Unit) (:features :js-ffi)
                   println |Saving...
                   write-text! |data/result.cirru $ format-cirru-edn merged
                   println |Done!
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'delay! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn delay! (ms cb) (set-timeout! cb ms) &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Number $ :: 'Fn
-              {} (:return 'Unit)
-                :args $ []
-                :features $ #{} :js-ffi
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn Number
+            Fn (-> Unit) (:features :js-ffi)
+            -> Unit
+            :features :js-ffi
         'load-data! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn load-data! ()
             let
@@ -115,15 +106,13 @@
                 entries $ to-pairs raw-data
                 sorted $ .sort-by (.to-list entries)
                   fn (entry)
-                    hint-fn $ {} (:return 'Number)
-                      :args $ [] $ :: 'List 'Dynamic
+                    hint-fn $ Fn (List Dynamic) (-> Number)
                     - 0 $ decode-map-as
                         last entry
                         , .unwrap
                       , 'Number
                 lines $ map-indexed sorted $ fn (idx entry)
-                  hint-fn $ {} (:return 'String)
-                    :args $ [] 'Number $ :: 'List 'Dynamic
+                  hint-fn $ Fn Number (List Dynamic) (-> String)
                   let
                       lang $ decode-map-as
                           first entry
@@ -137,15 +126,11 @@
                 data $ lines.join-string "|\n"
               println |size data
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (println |Started.) (count!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'process-chunk! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn process-chunk! (acc items cb)
             if (empty? items) (cb acc)
@@ -154,30 +139,21 @@
                     first items
                     , .unwrap
                 chan-count-language! lang $ fn (repos-count)
-                  hint-fn $ {} (:return 'Unit)
-                    :args $ [] 'Number
-                    :features $ #{} :js-ffi
+                  hint-fn $ Fn Number (-> Unit) (:features :js-ffi)
                   println |Got (format-cirru-edn lang) repos-count
                   delay! 4500 $ fn ()
-                    hint-fn $ {}
-                      :args $ []
-                      :return 'Unit
-                      :features $ #{} :js-ffi
+                    hint-fn $ Fn (-> Unit) (:features :js-ffi)
                     process-chunk! (assoc acc lang repos-count) (rest items) cb
                 , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] (:: 'Map 'String 'Number) (:: 'List 'String)
-              :: 'Fn $ {} (:return 'Unit)
-                :args $ [] $ :: 'Map 'String 'Number
-                :features $ #{} :js-ffi
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (Map String Number) (List String)
+            Fn (Map String Number) (-> Unit) (:features :js-ffi)
+            -> Unit
+            :features :js-ffi
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (println |Reloaded.) (count!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'split-chunks $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn split-chunks (xs size)
             if (empty? xs) ([])
@@ -189,10 +165,9 @@
                     remains $ drop xs size
                   concat ([] chunk) (split-chunks remains size)
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] (:: 'List 'T) 'Number
-            :generics $ [] 'T
-            :return $ :: 'List $ :: 'List 'T
+          :schema $ quote $ Fn (List T) Number
+            -> $ List $ List T
+            :generics T
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
