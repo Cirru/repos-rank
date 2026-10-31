@@ -15,7 +15,7 @@
   "repository": "git@github.com:Cirru/repos-rank.git",
   "license": "MIT",
   "dependencies": {
-    "@calcit/procs": "0.32.0",
+    "@calcit/procs": "0.32.1",
     "dotenv": "^17.4.2",
     "js-yaml": "^5.2.1"
   }
