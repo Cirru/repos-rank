@@ -47,7 +47,7 @@
                             match (text.parse-json)
                               (:ok raw) raw
                               (:err error) (raise error)
-                            :: 'Map 'Tag 'Dynamic
+                            Map Tag Dynamic
                           total $ or
                               get parsed :total_count
                               , .unwrap-or nil
@@ -76,7 +76,7 @@
                         , .parse-json
                       (:ok raw) raw
                       (:err error) (raise error)
-                    :: 'List 'String
+                    List String
                   , 2
                 chunk-size 815
                 language-chunks $ split-chunks all-langs chunk-size
@@ -100,29 +100,17 @@
           :code $ quote $ defn load-data! ()
             let
                 raw-data $ match
-                  try-parse-cirru-edn-as (read-text! |data/result.cirru) (:: 'Map 'String 'Number)
+                  try-parse-cirru-edn-as (read-text! |data/result.cirru) (Map String Number)
                   (:ok data) data
                   (:err error) (raise error)
                 entries $ to-pairs raw-data
                 sorted $ .sort-by (.to-list entries)
                   fn (entry)
-                    hint-fn $ Fn (List Dynamic) (-> Number)
-                    - 0 $ decode-map-as
-                        last entry
-                        , .unwrap
-                      , 'Number
+                    hint-fn $ Fn (Tuple String Number) (-> Number)
+                    let[] (_lang size) entry $ - 0 size
                 lines $ map-indexed sorted $ fn (idx entry)
-                  hint-fn $ Fn Number (List Dynamic) (-> String)
-                  let
-                      lang $ decode-map-as
-                          first entry
-                          , .unwrap
-                        , 'String
-                      size $ decode-map-as
-                          last entry
-                          , .unwrap
-                        , 'Number
-                    str idx "|\t" size "|\t" lang
+                  hint-fn $ Fn Number (Tuple String Number) (-> String)
+                  let[] (lang size) entry $ str idx "|\t" size "|\t" lang
                 data $ lines.join-string "|\n"
               println |size data
           :examples $ []

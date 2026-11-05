@@ -6,15 +6,11 @@ Count repos by language on GitHub
 
 本项目是 Node 抓取脚本，不是前端应用，不配置 COS/CDN。
 
-使用者影响：需要 Node 24、正式 Calcit **0.32.1**（与 `@calcit/procs` 精确配对）、Caps 和 Yarn 4.18.0。
-JSON 解析使用 core `.parse-json`，网络和定时器使用正式 `js-ffi` 0.2.9，
-不再依赖已归档的 `calcit-json`、旧 `calcit-fetch` 或未使用的 `calcit.std` / Axios。
+### 使用者影响
 
-现有 Snapshot 已使用当前类型标注，本轮官方 formatter 无需改写；更新 CLI/runtime 配对与正式 js-ffi 0.2.9。
-泛型 List 合同、分块条件、API 参数、延迟和结果格式不变，原离线抓取测试不改动。
-CI 保留正常 Caps strict/toolchain、全定义检查与原抓取测试，完整 strict 要求 passed 且无诊断。
-不增加验证脚本、类型预算、生产运行或 COS 工作流；正式版本声明不替代实际构建/测试证据。
-新 npm 解析遵守至少 60 分钟发布年龄，无例外；原 lock 只更新 `@calcit/procs` 的精确版本。
+升级到 Calcit 和 `@calcit/procs` **0.35.1** 后，请用 Node 24、Caps 和 Yarn 4.18.0 重新安装依赖并构建。抓取范围、等待时间和结果文件格式继续适用。网络及定时器使用正式 `js-ffi` **0.2.13**。
+
+读取排名时，排序及输出直接使用 `Tuple<String, Number>`，保留按计数降序输出。原离线测试使用合成响应，另用合成结果文件验证了生成 JS 的排序和名称。
 
 ```bash
 corepack enable
