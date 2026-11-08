@@ -3,6 +3,16 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { test } from 'node:test';
 import { parse_cirru_edn, to_js_data } from '@calcit/procs';
+import { read_search_count } from './js-out/app.main.mjs';
+
+test('count decoding accepts nullable response data and rejects a malformed count', () => {
+  assert.equal(read_search_count('{"total_count":42,"items":[{"description":null},null]}'), 42);
+  assert.equal(read_search_count('{"total_count":null}'), 0);
+  assert.equal(read_search_count('{"total_count":false}'), 0);
+  assert.equal(read_search_count('{}'), 0);
+  assert.throws(() => read_search_count('{"total_count":"42"}'), /total_count.*Number/);
+  assert.throws(() => read_search_count('{"total_count":true}'), /total_count.*Number/);
+});
 
 test('crawl continues after timers and saves only the first two languages', async (t) => {
   const originalCwd = process.cwd();

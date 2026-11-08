@@ -42,17 +42,7 @@
                   match
                     js-await $ response-text response
                     (:ok text)
-                      let
-                          parsed $ decode-map-as
-                            match (text.parse-json)
-                              (:ok raw) raw
-                              (:err error) (raise error)
-                            Map Tag Dynamic
-                          total $ match (get parsed :total_count)
-                            (:some count)
-                              if count (decode-map-as count 'Number) 0
-                            (:none) 0
-                        cb total
+                      cb $ read-search-count text
                     (:err error)
                       do
                         println "|Failed request:" $ :message error
@@ -138,6 +128,21 @@
             Fn (Map String Number) (-> Unit) (:features :js-ffi)
             -> Unit
             :features :js-ffi
+        'read-search-count $ %{} 'CodeEntry
+          :doc "|Validate the count field without decoding unused GitHub response fields."
+          :code $ quote $ defn read-search-count (text)
+            let
+                response $ contract/expect-object |GitHub.search $ js/JSON.parse text
+              when (js/Array.isArray response) (raise "|GitHub search response must be an object")
+              match
+                js-nullish->option $ contract/object-field |GitHub.search response |total_count
+                (:none) 0
+                (:some value)
+                  if (bool? value)
+                    if (contract/expect-bool |total_count value) (raise "|total_count must be a Number") 0
+                    contract/expect-number |total_count value
+          :examples $ []
+          :schema $ quote $ Fn String (-> Number) (:features :js-ffi)
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (println |Reloaded.) (count!)
           :examples $ []
@@ -160,4 +165,5 @@
         :code $ quote $ ns app.main
           :require
             js-ffi.shared :refer $ fetch-request HttpMethod headers-create headers-set! response-text
+            js-ffi.contract :as contract
             js-ffi.node :refer $ read-text! write-text! set-timeout!
