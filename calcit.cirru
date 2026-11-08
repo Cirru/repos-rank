@@ -48,11 +48,11 @@
                               (:ok raw) raw
                               (:err error) (raise error)
                             Map Tag Dynamic
-                          total $ or
-                              get parsed :total_count
-                              , .unwrap-or nil
-                            , 0
-                        cb $ decode-map-as total 'Number
+                          total $ match (get parsed :total_count)
+                            (:some count)
+                              if count (decode-map-as count 'Number) 0
+                            (:none) 0
+                        cb total
                     (:err error)
                       do
                         println "|Failed request:" $ :message error
