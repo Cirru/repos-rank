@@ -8,7 +8,7 @@ Count repos by language on GitHub
 
 ### 使用者影响
 
-升级到 Calcit 和 `@calcit/procs` **0.38.0** 后，请用 Node 24、Caps 和 Yarn 4.18.0 重新安装依赖并构建。抓取范围、等待时间和结果文件格式继续适用。响应中的计数在 JSON 边界解码为 Number。网络及定时器使用正式 `js-ffi` **0.2.14**。
+升级到 Calcit 和 `@calcit/procs` **0.40.0** 后，请用 Node 24、Caps 和 Yarn 4.18.0 重新安装依赖并构建。抓取范围、等待时间和结果文件格式继续适用。响应中的计数在 JSON 边界解码为 Number。网络及定时器使用正式 `js-ffi` **0.2.14**。
 
 读取排名时，排序及输出直接使用 `Tuple<String, Number>`，保留按计数降序输出。原离线测试使用合成响应，另用合成结果文件验证了生成 JS 的排序和名称。
 
