@@ -55,7 +55,7 @@
           :schema $ quote $ Fn String
             Fn Number (-> Unit) (:features :js-ffi)
             -> Unit
-            :features :js-ffi
+            :features :io :js-ffi
         'count! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn count! ()
             let
@@ -78,7 +78,7 @@
                   write-text! |data/result.cirru $ format-cirru-edn merged
                   println |Done!
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi)
         'delay! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn delay! (ms cb) (set-timeout! cb ms) &unit
           :examples $ []
@@ -104,11 +104,11 @@
                 data $ lines.join-string "|\n"
               println |size data
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (println |Started.) (count!)
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi)
         'process-chunk! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn process-chunk! (acc items cb)
             if (empty? items) (cb acc)
@@ -127,7 +127,7 @@
           :schema $ quote $ Fn (Map String Number) (List String)
             Fn (Map String Number) (-> Unit) (:features :js-ffi)
             -> Unit
-            :features :js-ffi
+            :features :io :js-ffi
         'read-search-count $ %{} 'CodeEntry
           :doc "|Validate the count field without decoding unused GitHub response fields."
           :code $ quote $ defn read-search-count (text)
@@ -146,7 +146,7 @@
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (println |Reloaded.) (count!)
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi)
         'split-chunks $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn split-chunks (xs size)
             if (empty? xs) ([])
