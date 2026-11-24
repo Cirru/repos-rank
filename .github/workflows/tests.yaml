@@ -20,11 +20,11 @@ jobs:
           node-version: 24
           package-manager-cache: false
       - run: corepack enable
-      - uses: calcit-lang/setup-calcit@v1.5.0
+      - uses: calcit-lang/setup-calcit@v1.5.2
         with:
           tools: calcit,caps
           deps-file: deps.cirru
-          caps-version: "0.1.1"
+          caps-version: "0.1.2"
       - name: Install and verify
         run: |
           set -euo pipefail

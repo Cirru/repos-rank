@@ -37,7 +37,7 @@
               headers-set! headers |Authorization $ str "|token " github-token
               headers-set! headers |User-Agent |calcit-repos-rank
               match
-                js-await $ fetch-request url (HttpMethod :get) headers
+                js-await $ fetch-request url (shared/HttpMethod :get) headers
                 (:ok response)
                   match
                     js-await $ response-text response
@@ -133,7 +133,9 @@
           :code $ quote $ defn read-search-count (text)
             let
                 response $ contract/expect-object |GitHub.search $ js/JSON.parse text
-              when (js/Array.isArray response) (raise "|GitHub search response must be an object")
+              when
+                contract/expect-bool |Array.isArray $ js/Array.isArray response
+                raise "|GitHub search response must be an object"
               match
                 js-nullish->option $ contract/object-field |GitHub.search response |total_count
                 (:none) 0
@@ -163,7 +165,7 @@
             :generics T
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
-          :require
-            js-ffi.shared :refer $ fetch-request HttpMethod headers-create headers-set! response-text
+          :require (js-ffi.shared :as shared)
+            js-ffi.shared :refer $ fetch-request headers-create headers-set! response-text
             js-ffi.contract :as contract
             js-ffi.node :refer $ read-text! write-text! set-timeout!
