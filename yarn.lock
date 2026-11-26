@@ -59,14 +59,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "js-yaml@npm:5.2.1"
+"js-yaml@npm:^5.4.1":
+  version: 5.4.1
+  resolution: "js-yaml@npm:5.4.1"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.mjs
-  checksum: 10c0/8eadf08efc738a656c2838f6617b0cc508944f66f568eb4d435e858261b889a6806d98f44fb6ffdba21a0c68e4bdff1ac35516724882e1dab8fc2cc59150c881
+  checksum: 10c0/efe9dfaf222809694d375ad5ecca825561d2432eb55bc0f628911c0dfa4dbce98a71dcbc3252f630208bbdf5f4e9ac363847e4a7f49845b577ae2548b8fcf147
   languageName: node
   linkType: hard
 
@@ -76,6 +76,6 @@ __metadata:
   dependencies:
     "@calcit/procs": "npm:0.45.1"
     dotenv: "npm:^17.4.2"
-    js-yaml: "npm:^5.2.1"
+    js-yaml: "npm:^5.4.1"
   languageName: unknown
   linkType: soft
